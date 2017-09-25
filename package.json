@@ -1,0 +1,14 @@
+{
+  "name": "nn-learning",
+  "version": "1.0.0",
+  "description": "Learning Neural Nets",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "author": "Kaleb Lape",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^0.22.0"
+  }
+}
