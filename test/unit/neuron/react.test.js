@@ -1,16 +1,37 @@
 import test, { test as it } from 'ava'
 import Neuron from '../../../lib/neuron'
 
-test.beforeEach(t => {
-  let weights = [0.1, 0.2, 0.3]
-  let subject = new Neuron(weights)
+const weights = []
+const inputs = []
+const activate = () => {}
+const activator = { activate }
 
-  Object.assign(t.context, { weights, subject })
-})
+test.beforeEach(t => Object.assign(t.context, { weights, activator }))
+
+function subject(t, overrides = {}) {
+  return Object.assign(new Neuron(t.context.weights, t.context.activator), overrides)
+}
 
 test('sums weighted inputs', t => {
-  let inputs = [1, 2, 3]
-  let expected = 1.4
+  const weightedSum = (inputs) => t.pass()
 
-  t.is(t.context.subject.react(inputs), expected)
+  t.plan(1)
+  subject(t, { weightedSum }).react(inputs)
+})
+
+test('activates the weighted sum', t => {
+  const sum = 'a value'
+  const weightedSum = () => sum
+  const activate = (value) => t.is(value, sum)
+
+  t.plan(1)
+  subject(t, { activate, weightedSum }).react(inputs)
+})
+
+test('returns the activated value', t => {
+  const activatedValue = 'activated value'
+  const activate = (value) => activatedValue
+
+  const value = subject(t, { activate }).react(inputs)
+  t.is(value, activatedValue)
 })
