@@ -3,16 +3,13 @@ import Brain from '../../../lib/brain'
 
 const folds = []
 const inputs = []
-const activate = () => {}
-const activator = { activate }
 const react = () => {}
-const outputNeuron = { react }
 
-test.beforeEach(t => Object.assign(t.context, { folds, outputNeuron, activator }))
+test.beforeEach(t => Object.assign(t.context, { folds }))
 
 function subject(t, overrides = {}) {
-  const { folds, outputNeuron, activator } = t.context
-  return Object.assign(new Brain(folds, outputNeuron, activator), overrides)
+  const { folds, activator } = t.context
+  return Object.assign(new Brain(folds, activator), overrides)
 }
 
 test('propagates inputs through the folds', t => {
@@ -22,11 +19,11 @@ test('propagates inputs through the folds', t => {
   const reactWithNextValue = (nextValue) => (input) => {
     const expected = expectedPropagation.shift()
     t.deepEqual(input, expected)
-    return nextValue
+    return { reactions: nextValue}
   }
 
   const folds = foldValues.map(nextValue => {
-    return { react: reactWithNextValue(nextValue) }
+    return { compute: reactWithNextValue(nextValue) }
   })
 
   Object.assign(t.context, { folds })
@@ -35,24 +32,12 @@ test('propagates inputs through the folds', t => {
   subject(t).react(inputs)
 })
 
-test('passes final inputs to output neuron', t => {
+test('returns value from folds', t => {
   const expected = 'a value'
-  const react = () => expected
-  const folds = [{ react }]
+  const compute = () => ({ reactions: expected })
+  const folds = [{ compute }]
 
-  const outputNeuron = { react: (input) => t.is(input, expected) }
-
-  Object.assign(t.context, { folds, outputNeuron })
-
-  t.plan(1)
-  subject(t).react(inputs)
-})
-
-test('returns value from output neuron', t => {
-  const expected = 'a value'
-  const react = () => expected
-  const outputNeuron = { react }
-  Object.assign(t.context, { outputNeuron })
+  Object.assign(t.context, { folds })
 
   t.is(subject(t).react(inputs), expected)
 })
