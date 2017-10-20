@@ -9,8 +9,7 @@ test(t => {
   const input = _.times(size, () => Math.random() * 10)
   const brain = BrainBuilder.new(new SigmoidActivator)
     .inputs(size)
-    .depth(3)
-    .breadth(3)
+    .layer(3)
     .outputs(3)
     .build()
 
