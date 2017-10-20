@@ -19,11 +19,11 @@ test('propagates inputs through the folds', t => {
   const reactWithNextValue = (nextValue) => (input) => {
     const expected = expectedPropagation.shift()
     t.deepEqual(input, expected)
-    return { reactions: nextValue}
+    return nextValue
   }
 
   const folds = foldValues.map(nextValue => {
-    return { compute: reactWithNextValue(nextValue) }
+    return { react: reactWithNextValue(nextValue) }
   })
 
   Object.assign(t.context, { folds })
@@ -34,8 +34,8 @@ test('propagates inputs through the folds', t => {
 
 test('returns value from folds', t => {
   const expected = 'a value'
-  const compute = () => ({ reactions: expected })
-  const folds = [{ compute }]
+  const react = () => expected
+  const folds = [{ react }]
 
   Object.assign(t.context, { folds })
 
