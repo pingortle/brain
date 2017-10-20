@@ -24,38 +24,46 @@ test(t => {
 test(t => {
   const brain = BrainBuilder.new(new SigmoidActivator)
     .inputs(2)
-    .depth(3)
-    .breadth(3)
+    .layer(2)
+    .layer(2)
+    // .layer(2)
+    // .depth(3)
+    // .breadth(3)
     .outputs(1)
     .build()
 
-    const andData = [
-      [[0, 0, 1], [0]],
-      [[0, 1, 1], [0]],
-      [[1, 0, 1], [0]],
-      [[1, 1, 1], [1]],
-    ]
+  const andData = [
+    [[0, 0, 1], [0]],
+    [[0, 1, 1], [0]],
+    [[1, 0, 1], [0]],
+    [[1, 1, 1], [1]],
+  ]
 
-    const xorData = [
-      [[0, 0, 1], [1]],
-      [[1, 0, 1], [0]],
-      [[0, 1, 1], [0]],
-      [[1, 1, 1], [1]],
-    ]
+  const xorData = [
+    [[0, 0], [0]],
+    [[1, 0], [1]],
+    [[0, 1], [1]],
+    [[1, 1], [0]],
+  ]
 
-    const lineData = [
-      [[1, 2], [1]],
-      [[1, 0], [0]],
-      [[2, 2.5], [1]],
-      [[1, 1.5], [1]],
-      [[3, 1], [0]],
-      [[4, 1], [0]],
-      [[5, 1], [0]],
-    ]
+  const lineData = _.chunk(_.times(10000, () => Math.random() * 10), 2).map(([x, y]) => {
+    return [[x,y], [y > x ? 1 : 0]]
+  })
 
-    const trainingSet = lineData
+  // Examples:
+  // [
+  //   [[1, 2], [1]],
+  //   [[1, 0], [0]],
+  //   [[2, 2.5], [1]],
+  //   [[1, 1.5], [1]],
+  //   [[3, 1], [0]],
+  //   [[4, 1], [0]],
+  //   [[5, 1], [0]],
+  // ]
 
-  const trainer = new Trainer(brain)
+  const trainingSet = xorData
+
+  const trainer = new Trainer(brain, { learningRate: .1 })
 
   t.log('Before training...')
   // console.log(JSON.stringify(brain, null, 2))
@@ -65,7 +73,7 @@ test(t => {
   })
 
   t.log('Training...')
-  _.times(10000, () => {
+  _.times(50000, () => {
     trainingSet.forEach(([input, output]) => {
       trainer.train(input, output)
     })
